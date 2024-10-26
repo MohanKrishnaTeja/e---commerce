@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const config = require('../config')
 
 
-export async function  authenticateToken(req,res,next){
+async function  authenticateToken(req,res,next){
     const token = req.headers["authorization"]
     if (!token) {
         return res.status(401).json({
