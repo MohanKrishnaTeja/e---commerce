@@ -4,9 +4,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
-
-
-const jwtSecret = "hello iam mohan"
+const config = require("../config")
 
 router.post('/signup',async(req,res)=>{
     const{ username , email , password , role} = req.body
@@ -51,7 +49,7 @@ router.post("/signin",async(req,res)=>{
                 msg : "incorrect password"
             })
         }
-        const token = jwt.sign({id:response.id,email},jwtSecret,{expiresIn : "1h"})
+        const token = jwt.sign({id:response.id,email}, config.jwtSecret ,{expiresIn : "1h"})
         res.status(200).json({
             msg : "signed in successfully",
             token
