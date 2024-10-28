@@ -1,8 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const { prisma, category } = require('../db')
 const authenticateToken = require('../middlewares/authenticateToken')
 const authorizeRoles = require('../middlewares/authorizeRoles')
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 
 //to get all the routes
@@ -25,7 +26,7 @@ router.get('/:id',authenticateToken,async (req,res)=>{
     try{
         const product = await prisma.product.findUnique({
             where :{
-                id
+                id : Number(id)
             }
         })
         if(!product){
@@ -35,6 +36,7 @@ router.get('/:id',authenticateToken,async (req,res)=>{
         }
         res.json(product)
     }catch(error){
+        console.log(error)
         res.status(500).json({
             msg : "error retriving product"
         })
@@ -44,7 +46,7 @@ router.get('/:id',authenticateToken,async (req,res)=>{
 
 //adding a product in the database only admin can do this
 
-router.post("/",authenticateToken,authorizeRoles("ADMIN"),async(req,res)=>{
+router.post("/products",authenticateToken,authorizeRoles("ADMIN"),async(req,res)=>{
     const {name, description, price, stock, category} = req.body
     
     try{
@@ -74,3 +76,5 @@ router.post("/",authenticateToken,authorizeRoles("ADMIN"),async(req,res)=>{
         })
     }
 })
+
+module.exports = router
