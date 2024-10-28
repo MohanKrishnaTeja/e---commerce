@@ -84,7 +84,7 @@ model OrderItem{
 
 model Cart{
   id Int @id @default(autoincrement())
-  userId Int 
+  userId Int @unique
   user User @relation(fields: [userId],references: [id])
   createdAt DateTime @default(now())
   cartItems CartItem[]

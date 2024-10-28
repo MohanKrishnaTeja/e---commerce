@@ -3,10 +3,11 @@ const router = express.Router()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const config = require("../config")
-const { prisma } = require('../app')
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 router.post('/signup',async(req,res)=>{
-    const{ username , email , password , role} = req.body
+    const{ username , email , password , role = "USER"} = req.body
     const hashedPassword = await bcrypt.hash(password,10)
     try{
         const response  = await prisma.user.create({
@@ -21,11 +22,12 @@ router.post('/signup',async(req,res)=>{
             msg : "created user successfully",
             response
         })
-    }catch(error){
+    }catch (error) {
+        console.error(error); // Log the error
         res.status(500).json({
-            msg : "error creating user",
+            msg: "Error creating user",
             error
-        })
+        });
     }
 })
 
@@ -61,4 +63,4 @@ router.post("/signin",async(req,res)=>{
     }
 })
 
-module.exports = router
+module.exports = router;

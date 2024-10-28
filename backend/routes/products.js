@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const prisma = require('../app')
+const { prisma, category } = require('../db')
 const authenticateToken = require('../middlewares/authenticateToken')
 const authorizeRoles = require('../middlewares/authorizeRoles')
 
@@ -44,4 +44,33 @@ router.get('/:id',authenticateToken,async (req,res)=>{
 
 //adding a product in the database only admin can do this
 
-
+router.post("/",authenticateToken,authorizeRoles("ADMIN"),async(req,res)=>{
+    const {name, description, price, stock, category} = req.body
+    
+    try{
+        const catid = await prisma.category.findFirst({
+            where : {
+                name : category
+            }
+        })
+        const response = await prisma.product.create({
+            data : {
+                name,
+                description,
+                price,
+                stock,
+                categoryId : catid.id
+            }
+        })
+        res.json({
+            msg : "product created successfully",
+            response
+        })
+    }catch(error){
+        console.error(error)
+        res.status(500).json({
+            msg : "error in creating producting",
+            error
+        })
+    }
+})
